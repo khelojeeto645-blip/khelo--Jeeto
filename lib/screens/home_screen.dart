@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   final _referInputCtrl = TextEditingController();
   int _selectedWithdrawAmt = 10;
 
-  final List> _quizQuestions = [
+  final List _quizQuestions = [
     {'q': '1. In which year did India win its first Cricket World Cup?', 'opts': ['1979', '1983', '1987', '2007'], 'ans': 1},
     {'q': '2. What is the full form of UPI?', 'opts': ['Unified Payments Interface', 'Universal Pay India', 'Unique Payment ID', 'United Pay Integration'], 'ans': 0},
     {'q': '3. Which is the longest sea bridge in India?', 'opts': ['Bandra-Worli Sea Link', 'Atal Setu (MTHL)', 'Pamban Bridge', 'Howrah Bridge'], 'ans': 1},
