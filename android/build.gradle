@@ -1,38 +1,17 @@
-plugins {
-    id "com.android.application"
-    id "kotlin-android"
-    id "dev.flutter.flutter-gradle-plugin"
-    id "com.google.gms.google-services"
-}
-
-android {
-    namespace "com.khelojeeto.app"
-    compileSdk 34
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
     }
-
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-
-    defaultConfig {
-        applicationId "com.khelojeeto.app"
-        minSdk 23
-        targetSdk 34
-        versionCode 1
-        versionName "1.0.0"
-    }
-
-    buildTypes {
-        release {
-            signingConfig signingConfigs.debug
-        }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.2'
+        classpath 'com.google.gms:google-services:4.4.2'
     }
 }
 
-flutter {
-    source '../..'
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
 }
