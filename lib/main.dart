@@ -7,8 +7,12 @@ import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await MobileAds.instance.initialize();
+  try {
+    await Firebase.initializeApp();
+  } catch (_) {}
+  try {
+    await MobileAds.instance.initialize();
+  } catch (_) {}
   runApp(const KheloJeetoApp());
 }
 
