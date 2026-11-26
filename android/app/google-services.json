@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "35966757432",
+    "firebase_url": "https://khelo-jeeto-9ab5f-default-rtdb.firebaseio.com",
+    "project_id": "khelo-jeeto-9ab5f",
+    "storage_bucket": "khelo-jeeto-9ab5f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:35966757432:android:f03044caf76d1a340554cd",
+        "android_client_info": {
+          "package_name": "com.khelojeeto.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "35966757432-16ft601f8cg2gidpjd2put747o66hqvp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO7OPTzCF7gg2ba96tLzCJsGt9QIl3rKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "35966757432-16ft601f8cg2gidpjd2put747o66hqvp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
