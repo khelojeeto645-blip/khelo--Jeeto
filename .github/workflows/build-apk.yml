@@ -20,6 +20,10 @@ jobs:
           channel: 'stable'
       - run: flutter create . --org com.khelojeeto --project-name khelo_jeeto
       - run: sed -i 's/id "org.jetbrains.kotlin.android" version "[^"]*"/id "org.jetbrains.kotlin.android" version "1.9.24"/' android/settings.gradle
+      - run: |
+          rm -rf android/app/src/main/kotlin/com/khelojeeto/khelo_jeeto
+          mkdir -p android/app/src/main/kotlin/com/khelojeeto/app
+          printf "package com.khelojeeto.app\n\nimport io.flutter.embedding.android.FlutterActivity\n\nclass MainActivity: FlutterActivity()\n" > android/app/src/main/kotlin/com/khelojeeto/app/MainActivity.kt
       - run: flutter pub get
       - run: flutter build apk --release
       - run: flutter build appbundle --release
