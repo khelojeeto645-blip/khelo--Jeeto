@@ -125,14 +125,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  void _showRewardedAd(VoidCallback onReward) {
+void _showRewardedAd(VoidCallback onReward) {
     if (_adsToday >= AppConfig.maxDailyAds) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Daily limit (12 Ads) reached!')));
       return;
     }
     if (_rewardedAd == null) {
       _loadRewardedAd();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ad loading... tap again in 2 seconds.')));
+      onReward();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coins added! (AdMob waiting for Play Store link)')));
       return;
     }
     _rewardedAd!.show(onUserEarnedReward: (_, __) {
