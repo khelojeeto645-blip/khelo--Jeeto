@@ -25,6 +25,7 @@ jobs:
           mkdir -p android/app/src/main/kotlin/com/khelojeeto/app
           printf "package com.khelojeeto.app\n\nimport io.flutter.embedding.android.FlutterActivity\n\nclass MainActivity: FlutterActivity()\n" > android/app/src/main/kotlin/com/khelojeeto/app/MainActivity.kt
       - run: flutter pub get
+      - run: dart run flutter_launcher_icons
       - run: flutter build apk --release
       - run: flutter build appbundle --release
       - uses: actions/upload-artifact@v4
