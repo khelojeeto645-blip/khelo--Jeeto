@@ -35,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   double _targetAngle = 0;
   bool _isSpinning = false;
   int _activeSeconds = 0;
+  int _quickAdCooldown = 0;
   Timer? _timer;
 
   final List<int> _spinValues = [10, 20, 30, 40, 50];
@@ -83,7 +84,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         });
       });
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() => _activeSeconds++);
+      if (mounted) {
+        setState(() {
+          _activeSeconds++;
+          if (_quickAdCooldown > 0) _quickAdCooldown--;
+        });
+      }
     });
     _loadUserData();
     _loadRewardedAd();
@@ -125,15 +131,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-void _showRewardedAd(VoidCallback onReward) {
+  void _showRewardedAd(VoidCallback onReward) {
     if (_adsToday >= AppConfig.maxDailyAds) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Daily limit (12 Ads) reached!')));
       return;
     }
     if (_rewardedAd == null) {
       _loadRewardedAd();
-      onReward();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coins added! (AdMob waiting for Play Store link)')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ad loading... please try again in 2 seconds.')));
       return;
     }
     _rewardedAd!.show(onUserEarnedReward: (_, __) {
@@ -173,7 +178,7 @@ void _showRewardedAd(VoidCallback onReward) {
       _quizAnswered = true;
       if (selectedIdx == correctIdx) {
         _quizCorrect++;
-        _quizFeedback = 'Correct! Watch Ad completed for +25 Coins.';
+        _quizFeedback = 'Correct! Watch Ad to claim +25 Coins.';
       } else {
         _quizWrong++;
         _quizFeedback = 'Wrong Answer! Score record updated.';
@@ -257,15 +262,26 @@ void _showRewardedAd(VoidCallback onReward) {
                       ],
                     ),
                     ElevatedButton.icon(
-                      onPressed: () => _showRewardedAd(() => _addCoins(50)),
+                      onPressed: _quickAdCooldown > 0
+                          ? null
+                          : () => _showRewardedAd(() {
+                                _addCoins(50);
+                                setState(() => _quickAdCooldown = 240);
+                              }),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFBBF24),
                         foregroundColor: const Color(0xFF0F172A),
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
-                      icon: const Icon(Icons.play_circle_fill, size: 20),
-                      label: const Text('+50 Coins\nWatch Ad', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                      icon: Icon(_quickAdCooldown > 0 ? Icons.timer : Icons.play_circle_fill, size: 20),
+                      label: Text(
+                        _quickAdCooldown > 0
+                            ? 'Wait\n${(_quickAdCooldown ~/ 60).toString().padLeft(2, '0')}:${(_quickAdCooldown % 60).toString().padLeft(2, '0')}'
+                            : '+50 Coins\nWatch Ad',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),
@@ -511,8 +527,8 @@ void _showRewardedAd(VoidCallback onReward) {
                     }
                     final docs = List<QueryDocumentSnapshot>.from(snap.data?.docs ?? []);
                     docs.sort((a, b) {
-                      final t1 = (a.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;
-                      final t2 = (b.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;
+                      final t1 = (a.data() as Map)['createdAt'] as Timestamp?;
+                      final t2 = (b.data() as Map)['createdAt'] as Timestamp?;
                       return (t2?.millisecondsSinceEpoch ?? 0).compareTo(t1?.millisecondsSinceEpoch ?? 0);
                     });
                     if (docs.isEmpty) {
@@ -522,7 +538,7 @@ void _showRewardedAd(VoidCallback onReward) {
                       padding: const EdgeInsets.all(16),
                       itemCount: docs.length,
                       itemBuilder: (_, i) {
-                        final d = docs[i].data() as Map<String, dynamic>;
+                        final d = docs[i].data() as Map;
                         return Card(
                           margin: const EdgeInsets.only(bottom: 12),
                           child: Padding(
@@ -639,7 +655,7 @@ void _showRewardedAd(VoidCallback onReward) {
     if (_checkTttWin('X')) {
       setState(() {
         _tttOver = true;
-        _tttStatus = 'You Won! Ad completed for +30 Coins.';
+        _tttStatus = 'You Won! Watch Ad to claim +30 Coins.';
       });
       _showRewardedAd(() => _addCoins(30));
       return;
