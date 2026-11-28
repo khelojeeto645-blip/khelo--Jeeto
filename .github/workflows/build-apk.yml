@@ -24,6 +24,7 @@ jobs:
           rm -rf android/app/src/main/kotlin/com/khelojeeto/khelo_jeeto
           mkdir -p android/app/src/main/kotlin/com/khelojeeto/app
           printf "package com.khelojeeto.app\n\nimport io.flutter.embedding.android.FlutterActivity\n\nclass MainActivity: FlutterActivity()\n" > android/app/src/main/kotlin/com/khelojeeto/app/MainActivity.kt
+      - run: keytool -genkey -v -keystore android/app/khelo-jeeto-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias khelojeeto -storepass KheloJeeto2026 -keypass KheloJeeto2026 -dname "CN=Khelo Jeeto, OU=Mobile, O=NexGen Games Studio, L=India, ST=UP, C=IN"
       - run: flutter pub get
       - run: dart run flutter_launcher_icons
       - run: flutter build apk --release
@@ -34,3 +35,4 @@ jobs:
           path: |
             build/app/outputs/flutter-apk/app-release.apk
             build/app/outputs/bundle/release/app-release.aab
+            android/app/khelo-jeeto-release.jks
