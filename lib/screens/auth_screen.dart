@@ -13,23 +13,51 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _isLogin = true;
   bool _loading = false;
   String? _error;
+  String? _info;
 
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   final _referCtrl = TextEditingController();
 
+  Future<void> _forgotPassword() async {
+    final email = _emailCtrl.text.trim().toLowerCase();
+    if (!email.endsWith('@gmail.com')) {
+      setState(() {
+        _error = 'Please enter your @gmail.com ID above first.';
+        _info = null;
+      });
+      return;
+    }
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      setState(() {
+        _error = null;
+        _info = 'Password reset link sent to $email! Check your Gmail inbox.';
+      });
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _info = null;
+        _error = e.message ?? 'Could not send reset email.';
+      });
+    }
+  }
+
   Future<void> _submit() async {
     final email = _emailCtrl.text.trim().toLowerCase();
     final pass = _passCtrl.text;
     if (!email.endsWith('@gmail.com') || pass.length < 6) {
-      setState(() => _error = 'Please enter a valid @gmail.com ID and password (min 6 chars).');
+      setState(() {
+        _info = null;
+        _error = 'Please enter a valid @gmail.com ID and password (min 6 chars).';
+      });
       return;
     }
 
     setState(() {
       _loading = true;
       _error = null;
+      _info = null;
     });
 
     try {
@@ -77,7 +105,11 @@ class _AuthScreenState extends State<AuthScreen> {
                   ButtonSegment(value: false, label: Text('Register')),
                 ],
                 selected: {_isLogin},
-                onSelectionChanged: (v) => setState(() => _isLogin = v.first),
+                onSelectionChanged: (v) => setState(() {
+                  _isLogin = v.first;
+                  _error = null;
+                  _info = null;
+                }),
               ),
               const SizedBox(height: 20),
               if (!_isLogin) ...[
@@ -87,15 +119,27 @@ class _AuthScreenState extends State<AuthScreen> {
               TextField(controller: _emailCtrl, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(labelText: 'Gmail ID', border: OutlineInputBorder())),
               const SizedBox(height: 12),
               TextField(controller: _passCtrl, obscureText: true, decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder())),
+              if (_isLogin)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: _loading ? null : _forgotPassword,
+                    child: const Text('Forgot Password?'),
+                  ),
+                ),
               if (!_isLogin) ...[
                 const SizedBox(height: 12),
                 TextField(controller: _referCtrl, decoration: const InputDecoration(labelText: 'Referral Code (Optional)', border: OutlineInputBorder())),
               ],
               if (_error != null) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
               ],
-              const SizedBox(height: 20),
+              if (_info != null) ...[
+                const SizedBox(height: 8),
+                Text(_info!, style: const TextStyle(color: Color(0xFF059669), fontSize: 13, fontWeight: FontWeight.w600)),
+              ],
+              const SizedBox(height: 16),
               FilledButton(
                 onPressed: _loading ? null : _submit,
                 style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
